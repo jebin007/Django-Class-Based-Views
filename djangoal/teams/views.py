@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from . import mixins
 
 from . import models
 
@@ -26,9 +28,10 @@ class TeamDeatailView(DetailView, UpdateView):
     fields = ("name", "practice_location", "coach")
     template_name = "teams/team_detail.html"
 
-class TeamCreateView(CreateView):
+class TeamCreateView(LoginRequiredMixin, mixins.PageTitleMixin, CreateView):
     model = models.Team
     fields = ("name", "practice_location", "coach")
+    page_title = "Create a new team"
 
     def get_initial(self):                              #this function auto selects the logged in coach when creating teams.
         initial = super().get_initial()
@@ -36,11 +39,14 @@ class TeamCreateView(CreateView):
         return initial
 
 
-class TeamUpdateView(UpdateView):
+class TeamUpdateView(LoginRequiredMixin, mixins.PageTitleMixin, UpdateView):
     model = models.Team
     fields = ("name", "practice_location", "coach")
 
-class TeamDeleteView(DeleteView):
+    def get_page_title(self):
+        obj = self.get_object()
+        return "Update {}".format(obj.name)
+class TeamDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Team
     success_url = reverse_lazy("teams:list")
 
