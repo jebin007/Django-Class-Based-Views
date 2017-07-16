@@ -14,12 +14,17 @@ def team_detail(request, pk):
     team = get_object_or_404(models.Team, pk=pk)
     return render(request, 'teams/team_detail.html', {'team': team})
 
-class TeamListView(ListView):
+class TeamListView(CreateView, ListView):
     context_object_name = "teams"
     model = models.Team
+    fields = ("name", "practice_location", "coach")
+    template_name = "teams/team_list.html"
 
-class TeamDeatilView(DetailView):
+
+class TeamDeatailView(DetailView, UpdateView):
     model = models.Team
+    fields = ("name", "practice_location", "coach")
+    template_name = "teams/team_detail.html"
 
 class TeamCreateView(CreateView):
     model = models.Team
